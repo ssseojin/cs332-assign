@@ -1,0 +1,17 @@
+# Eclipse
+.classpath
+.project
+.settings/
+  
+# Metals/ VSCode
+.metals/
+.vscode/
+
+# sbt
+target/
+project/target/
+*.class
+*.jar
+
+# macOS
+.DS_Store
