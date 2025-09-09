@@ -77,7 +77,9 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val A = union(union(s1, s2),s3)
   }
+  
 
   /**
    * This test is currently disabled (by using "ignore") because the method
@@ -86,7 +88,7 @@ class FunSetSuite extends FunSuite {
    * Once you finish your implementation of "singletonSet", exchange the
    * function "ignore" by "test".
    */
-  ignore("singletonSet(1) contains 1") {
+  test("singletonSet(1) contains 1") {
     
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
@@ -101,12 +103,69 @@ class FunSetSuite extends FunSuite {
     }
   }
 
-  ignore("union contains all elements") {
+
+  test("union contains all elements") {
     new TestSets {
       val s = union(s1, s2)
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
+    }
+  }
+
+
+  test("intersect contains all elements") {
+    new TestSets {
+      val s = intersect(union(s1, s2), union(s2, s3))
+      assert(!contains(s, 1), "intersect 1")
+      assert(contains(s, 2), "intersect 2")
+      assert(!contains(s, 3), "intersect 3")
+    }
+  }
+
+
+  test("diff contains all elements") {
+    new TestSets {
+      val s = diff(union(s1, s2), union(s2, s3))
+      assert(contains(s, 1), "diff 1")
+      assert(!contains(s, 2), "diff 2")
+      assert(!contains(s, 3), "diff 3")
+    }
+  }
+
+
+  test("filter works well") {
+    new TestSets {
+      val s = filter(A, x => x>=2)
+      assert(!contains(s, 1), "filter 1")
+      assert(contains(s, 2), "filter 2")
+      assert(contains(s, 3), "filter 3")
+    }
+  }
+
+  test("for all works well") {
+    new TestSets {
+      assert(forall(A, (x: Int) => x>=0), "for all element of {1,2,3}, x >= 0")
+      assert(!forall(A, (x: Int) => x==0), "for all element of {1,2,3}, x >= 0")
+    }
+  }
+
+  test("exists works well") {
+    new TestSets {
+      val p = (x: Int) => x==2
+      assert(exists(A, p), "There exists 2 in {1,2,3}")
+      assert(!exists(A, (x: Int) => x==0), "There exists 2 in {1,2,3}")
+    }
+  }
+
+  test("map works well") {
+    new TestSets {
+      val f = (x: Int) => 2*x
+      assert(contains(map(A,f),2), "map contains 2")
+      assert(contains(map(A,f),4), "map contains 4")
+      assert(contains(map(A,f),6), "map contains 6")
+      assert(!contains(map(A,f),-2), "map not contains -2")
+      assert(!contains(map(A,f),1), "map not contains 1")
     }
   }
 }
