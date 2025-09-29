@@ -30,6 +30,22 @@ class HuffmanSuite extends FunSuite {
     assert(string2Chars("hello, world") === List('h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'))
   }
 
+  test("times(\"hello, world\")"){
+    val input = "hello, world".toList
+    val expected = List(
+    ('h', 1),
+    ('e', 1),
+    ('l', 3),
+    ('o', 2),
+    (',', 1),
+    (' ', 1),
+    ('w', 1),
+    ('r', 1),
+    ('d', 1)
+    )
+    assert(times(input).toSet == expected.toSet)
+  }
+
   test("makeOrderedLeafList for some frequency table") {
     assert(makeOrderedLeafList(List(('t', 2), ('e', 1), ('x', 3))) === List(Leaf('e',1), Leaf('t',2), Leaf('x',3)))
   }
@@ -43,5 +59,21 @@ class HuffmanSuite extends FunSuite {
     new TestTrees {
       assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
     }
+  }
+
+  test("decode and quickencode a very short text should be identity") {
+    new TestTrees {
+      assert(decode(t1, quickEncode(t1)("ab".toList)) === "ab".toList)
+    }
+  }
+
+  test("decode and encode long text should be identity") {
+    val t1 = createCodeTree("abjiowejiojwow".toList)
+    assert(decode(t1, encode(t1)("abjiowejiojwow".toList)) === "abjiowejiojwow".toList)
+  }
+
+  test("decode and quickencode long text should be identity") {
+    val t1 = createCodeTree("abjiowejiojwow".toList)
+    assert(decode(t1, quickEncode(t1)("abjiowejiojwow".toList)) === "abjiowejiojwow".toList)
   }
 }
