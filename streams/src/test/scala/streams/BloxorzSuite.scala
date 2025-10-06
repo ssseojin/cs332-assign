@@ -37,6 +37,7 @@ class BloxorzSuite extends FunSuite {
       |-----ooToo
       |------ooo-""".stripMargin
 
+    val b = Block(Pos(1,1),Pos(1,1))
     val optsolution = List(Right, Right, Down, Right, Right, Right, Down)
   }
 
@@ -53,8 +54,40 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
+  test("legalNeighbors of start") {
+    new Level1 {
+      // println(s"legalNeighbors of start = ${Block(startPos,startPos).legalNeighbors}")
+      val legalNeighborsOfStartPos = List((Block(Pos(1,2),Pos(1,3)),Right), (Block(Pos(2,1),Pos(3,1)),Down))
+      assert(Block(startPos,startPos).legalNeighbors == legalNeighborsOfStartPos)
+    }
+  }
+
+  test("neighborsWithHistory for level 1") {
+    new Level1 {
+      // val b = Block(Pos(1,1),Pos(1,1))
+      // println(b.legalNeighbors.getClass)
+      val history = neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)).toSet
+      val result = Set( 
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+        )
+      assert(history == result)
+    }
+  }
+
+  test("newNeighborsOnly for level 1") {
+    new Level1 {
+      val explored = Set(Block(Pos(1,2),Pos(1,3)), Block(Pos(1,1),Pos(1,1)))
+      val filtered = newNeighborsOnly(neighborsWithHistory(b, List(Left,Up)), explored)  
+      val res = Set( (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up)) ).toStream
+      assert(filtered == res)
+    }
+  }
+
+
   test("optimal solution for level 1") {
     new Level1 {
+      // println(s"pathfromstart:${pathsFromStart.toList}")
       assert(solve(solution) == Block(goal, goal))
     }
   }
