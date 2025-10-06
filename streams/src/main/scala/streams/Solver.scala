@@ -29,10 +29,10 @@ trait Solver extends GameDef {
    * that are inside the terrain.
    */
   def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
-    val res = for {
-      (neighborBlock, legalMove) <- b.legalNeighbors
-    } yield (neighborBlock , legalMove :: history)
-    res.toStream
+    b.legalNeighbors.toStream.map{ 
+      case (neighborBlock, legalMove) => 
+        (neighborBlock , legalMove :: history)
+      }
   }
 
   /**
@@ -72,15 +72,14 @@ trait Solver extends GameDef {
            explored: Set[Block]): Stream[(Block, List[Move])] = {
     // initial 중에 explored아닌것들 전부다 explored로 추가.
     // initial의 newneighbor들 전부다 initial에 추가.
-    val newNeighbors = for {
-      (b, h) <- initial
-    } yield newNeighborsOnly(neighborsWithHistory(b, h), explored)
-    val reachable = newNeighbors.foldLeft(initial){case (acc, stream) => acc ++ stream}
-    // initial에다가 newneighbor들 다추가
-    val newexplored = initial.filter(s => !explored.contains(s._1)).map(_._1).toSet 
-    // initial중에 explored 아니었던거 추가
-    if (newexplored.isEmpty) initial
-    else from(reachable, explored ++ newexplored)
+    val newNeighbors = initial.flatMap{case (b, h) => 
+        newNeighborsOnly(neighborsWithHistory(b, h), explored)
+      }
+    val reachable = initial ++ newNeighbors
+    val newExplored = newNeighbors.map(_._1).toSet
+
+    if (newExplored.isEmpty) initial
+    else from(reachable, explored ++ newExplored)
   }
 
   /**
